@@ -92,6 +92,10 @@ class HashTable:
         Implement this.
         """
         # Your code here
+        if self.storage[key] != None:
+            return
+        else:
+            self.storage[key] = value
 
 
     def delete(self, key):

@@ -22,6 +22,7 @@ class HashTable:
 
     def __init__(self, capacity):
         # Your code here
+        self.capacity = capacity
 
 
     def get_num_slots(self):
@@ -63,6 +64,13 @@ class HashTable:
         Implement this, and/or FNV-1.
         """
         # Your code here
+
+        hash = 5381
+
+        for byte in key.encode():
+            hash = (hash * 33) + byte
+
+        return hash % self.capacity
 
 
     def hash_index(self, key):

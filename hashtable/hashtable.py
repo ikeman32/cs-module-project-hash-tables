@@ -123,6 +123,10 @@ class HashTable:
         Implement this.
         """
         # Your code here
+        try:
+            return self.storage[key]
+        except:
+            return None
 
 
     def resize(self, new_capacity):

@@ -107,6 +107,11 @@ class HashTable:
         Implement this.
         """
         # Your code here
+        try:
+            self.storage.pop(key)
+        except:
+            print(f'The key: {key} was not found!')
+            
 
 
     def get(self, key):

@@ -70,7 +70,7 @@ class HashTable:
         for byte in key.encode():
             hash = (hash * 33) + byte
 
-        return hash % self.capacity
+        return hash
 
 
     def hash_index(self, key):

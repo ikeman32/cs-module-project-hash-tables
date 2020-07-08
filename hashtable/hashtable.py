@@ -7,6 +7,18 @@ class HashTableEntry:
         self.value = value
         self.next = None
 
+    def __repr__(self):
+        content = ''
+
+        cur_node = self
+
+        while cur_node.next:
+            content += str(self.value)
+            cur_node = cur_node.next
+        
+        content += None
+
+        return content
 
 # Hash table can't have fewer than this many slots
 MIN_CAPACITY = 8
@@ -26,6 +38,12 @@ class HashTable:
         self.items = 0
         self.storage = [None] * capacity
 
+    def __repr__(self):
+        stored = f'Hashtable: {self.items}/{self.capacity} items stored\n'
+        content = "\n".join([str(idx) + ": " + str(linked_list) for idx, linked_list in enumerate(self.storage)])
+
+        return stored + content
+
 
     def get_num_slots(self):
         """
@@ -38,6 +56,7 @@ class HashTable:
         Implement this.
         """
         # Your code here
+        return self.storage
 
 
     def get_load_factor(self):
@@ -47,6 +66,7 @@ class HashTable:
         Implement this.
         """
         # Your code here
+        return self.items / self.capacity
 
 
     def fnv1(self, key):
@@ -92,10 +112,28 @@ class HashTable:
         Implement this.
         """
         # Your code here
-        if self.storage[key] != None:
-            return
+        idx = self.hash_index(key)
+        # If nothing in storage at the given key instert value
+        if not self.storage[idx]:
+            self.storage[idx] = HashTableEntry(key, value)
+            self.items += 1
         else:
-            self.storage[key] = value
+            cur_node = self.storage[idx]
+
+            while cur_node.key != key and cur_node.next:
+                cur_node = cur_node.next
+
+            # Update current value
+            if cur_node.key == key:
+                cur_node.value = value
+            else:
+                # Add new Entry
+                cur_node.next = HashTableEntry(key, value)
+                self.items += 1
+
+        # If loadfacter too large double the size
+        if self.get_load_factor() >= 0.7:
+            self.resize(self.capacity * 2)
 
 
     def delete(self, key):
@@ -107,10 +145,38 @@ class HashTable:
         Implement this.
         """
         # Your code here
-        try:
-            self.storage.pop(key)
-        except:
-            print(f'The key: {key} was not found!')
+        idx = self.hash_index(key)
+        cur_node = self.storage[idx]
+        # Nothing to delete
+        if not cur_node:
+            print('Key not found.')
+        # Delete if at the beginning
+        elif not cur_node.next:
+            self.storage[idx] = None
+            self.items -= 1
+        else:
+            prev_node = None
+            # Move to next not if one exists
+            while cur_node.key != key and cur_node.next:
+                prev_node = cur_node
+                cur_node  = cur_node.next
+            # Delete from end
+            if not cur_node.next:
+                prev_node.next = None
+                self.items -= 1
+            else:
+                # Delete from middle
+                prev_node.next = cur_node.next
+                self.items -= 1
+        # Resize if load factor too small
+        if self.get_load_factor() < 0.2:
+            new_capacity = self.capacity // 2
+
+            # Keep at minimum capacity
+            if new_capacity < MIN_CAPACITY:
+                new_capacity = MIN_CAPACITY
+
+            self.resize(new_capacity)
             
 
 
@@ -123,11 +189,22 @@ class HashTable:
         Implement this.
         """
         # Your code here
-        try:
-            return self.storage[key]
-        except:
-            return None
+        idx = self.hash_index(key)
 
+        if self.storage[idx]:
+            cur_node = self.storage[idx]
+            # No match move to next node
+            while cur_node.key != key and cur_node.next:
+                cur_node = cur_node.next
+            # No key found
+            if not cur_node.next:
+                return cur_node.value
+            else:
+                # Otherwise stop and return value
+                return cur_node.value
+        # No linked list found
+        else:
+            return None
 
     def resize(self, new_capacity):
         """
@@ -137,6 +214,24 @@ class HashTable:
         Implement this.
         """
         # Your code here
+        # Store hash table
+        old = self.storage
+
+        # New hash table and update
+        self.capacity = new_capacity
+        self.storage = [None] * new_capacity
+
+        # Loop through old and add to ne hash table
+        for item in old:
+
+            if item:
+                cur_node = item
+
+                while cur_node:
+
+                    self.put(cur_node.key, cur_node.value)
+                    
+                    cur_node= cur_node.next
 
 
 

@@ -1,16 +1,15 @@
 def word_count(s):
     # Your code here
     count = {}
-    ignore= ('.\'",')
+    ignore= ('.,"')
     s = s.lower()
     for c in s:
         for i in ignore:
             if c == i:
                 s = s.replace(i, '')
-
-    s = list(s.split(' '))
-    if not s:
+    if len(s) == 0:
         return count
+    s = list(s.split(' '))
 
     for w in s:
         if w not in count:
